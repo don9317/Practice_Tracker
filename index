@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Oklahoma Swarm Practice Tracker</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --ink: #172033;
+      --muted: #687386;
+      --line: #dfe5ee;
+      --gold: #f5b942;
+      --navy: #111827;
+      --blue: #2563eb;
+      --green: #16a34a;
+      --red: #dc2626;
+      --orange: #f97316;
+      --shadow: 0 10px 30px rgba(17, 24, 39, 0.08);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    header {
+      background: linear-gradient(135deg, #111827, #1f2937);
+      color: white;
+      padding: 22px 18px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: 0 4px 18px rgba(0,0,0,.18);
+    }
+
+    .header-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: var(--gold);
+      color: var(--navy);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      letter-spacing: -1px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      margin-top: 2px;
+      color: #cbd5e1;
+      font-size: 13px;
+    }
+
+    .mode-pill {
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.22);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    main {
+      max-width: 1120px;
+      margin: 18px auto 70px;
+      padding: 0 14px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .tab-btn, button, select, input, textarea {
+      font-family: inherit;
+      font-size: 15px;
+    }
+
+    .tab-btn {
+      border: 1px solid var(--line);
+      background: white;
+      padding: 10px 14px;
+      border-radius: 999px;
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background: var(--navy);
+      color: white;
+      border-color: var(--navy);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    .span-4 { grid-column: span 4; }
+    .span-5 { grid-column: span 5; }
+    .span-7 { grid-column: span 7; }
+    .span-8 { grid-column: span 8; }
+    .span-12 { grid-column: span 12; }
+
+    @media (max-width: 850px) {
+      .span-4, .span-5, .span-7, .span-8 { grid-column: span 12; }
+      .header-inner { align-items: flex-start; flex-direction: column; }
+      header { position: static; }
+    }
+
+    .card-title {
+      margin: 0 0 4px;
+      font-size: 18px;
+    }
+
+    .card-note {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 14px;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    label {
+      font-weight: 700;
+      font-size: 13px;
+      color: #334155;
+      display: block;
+      margin: 12px 0 6px;
+    }
+
+    select, input[type="date"], input[type="text"], textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 11px 12px;
+      background: white;
+      color: var(--ink);
+      outline: none;
+    }
+
+    textarea { min-height: 80px; resize: vertical; }
+
+    button {
+      border: none;
+      border-radius: 14px;
+      padding: 11px 14px;
+      cursor: pointer;
+      font-weight: 800;
+      background: var(--navy);
+      color: white;
+    }
+
+    button.secondary { background: #e5e7eb; color: #111827; }
+    button.green { background: var(--green); }
+    button.red { background: var(--red); }
+    button.blue { background: var(--blue); }
+    button.orange { background: var(--orange); }
+    button:disabled { opacity: .45; cursor: not-allowed; }
+
+    .player-list {
+      display: grid;
+      gap: 9px;
+      margin-top: 12px;
+    }
+
+    .player-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+      background: #fbfdff;
+    }
+
+    .player-name { font-weight: 800; }
+    .small { font-size: 12px; color: var(--muted); }
+
+    .check-large {
+      width: 28px;
+      height: 28px;
+      accent-color: var(--green);
+    }
+
+    .homework-grid {
+      overflow-x: auto;
+      margin-top: 12px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      padding: 10px;
+      vertical-align: middle;
+      font-size: 14px;
+    }
+
+    th {
+      background: #f8fafc;
+      color: #334155;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .metric {
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      padding: 14px;
+      background: #fbfdff;
+    }
+
+    .metric-value {
+      font-size: 30px;
+      font-weight: 900;
+      margin-top: 6px;
+    }
+
+    .status {
+      padding: 9px 12px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 13px;
+      display: inline-block;
+    }
+
+    .status.good { color: #166534; background: #dcfce7; }
+    .status.warn { color: #9a3412; background: #ffedd5; }
+    .status.bad { color: #991b1b; background: #fee2e2; }
+
+    .hidden { display: none !important; }
+
+    .day-buttons {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .day-toggle {
+      border: 1px solid var(--line);
+      background: white;
+      color: var(--ink);
+      padding: 10px 6px;
+      border-radius: 12px;
+    }
+
+    .day-toggle.active {
+      background: var(--blue);
+      color: white;
+      border-color: var(--blue);
+    }
+
+    .team-card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      background: #fbfdff;
+      margin-bottom: 10px;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      background: #111827;
+      color: white;
+      padding: 12px 16px;
+      border-radius: 999px;
+      box-shadow: var(--shadow);
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s ease;
+      text-align: center;
+      max-width: 90vw;
+    }
+
+    .toast.show { opacity: 1; }
+
+    .danger-zone {
+      border: 1px dashed #ef4444;
+      background: #fff7f7;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="brand">
+        <div class="logo">OS</div>
+        <div>
+          <h1>Oklahoma Swarm Tracker</h1>
+          <div class="subtitle">Practice attendance • skills class • weekly homework</div>
+        </div>
+      </div>
+      <div class="mode-pill" id="modePill">Coach Mode</div>
+    </div>
+  </header>
+
+  <main>
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="attendance">Practice Attendance</button>
+      <button class="tab-btn" data-tab="homework">Weekly Homework</button>
+      <button class="tab-btn" data-tab="skills">Skills Class</button>
+      <button class="tab-btn" data-tab="dashboard">Dashboard</button>
+      <button class="tab-btn" data-tab="admin">Admin Setup</button>
+    </div>
+
+    <section id="attendance" class="tab-section">
+      <div class="grid">
+        <div class="card span-4">
+          <h2 class="card-title">Today’s Practice</h2>
+          <div class="card-note">Coach opens the team link, taps absent players, and submits.</div>
+
+          <label>Team</label>
+          <select id="attendanceTeam"></select>
+
+          <label>Practice Date</label>
+          <input type="date" id="attendanceDate" />
+
+          <div style="margin-top:14px" id="practiceStatus"></div>
+
+          <div class="row" style="margin-top:14px">
+            <button class="green" id="markAllPresentBtn">Mark All Present</button>
+            <button class="secondary" id="clearAllBtn">Clear All</button>
+            <button class="orange" id="addExtraPracticeBtn">Add Extra Practice</button>
+          </div>
+        </div>
+
+        <div class="card span-8">
+          <h2 class="card-title">Player Attendance</h2>
+          <div class="card-note">Checked = present. Unchecked = absent.</div>
+          <div id="attendancePlayers" class="player-list"></div>
+          <label>Practice Notes</label>
+          <textarea id="attendanceNotes" placeholder="Optional: injuries, late arrivals, tournament week, etc."></textarea>
+          <div class="row" style="margin-top:14px">
+            <button class="blue" id="submitAttendanceBtn">Submit Attendance</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="homework" class="tab-section hidden">
+      <div class="grid">
+        <div class="card span-4">
+          <h2 class="card-title">Weekly Homework</h2>
+          <div class="card-note">One quick weekly submission per team.</div>
+
+          <label>Team</label>
+          <select id="homeworkTeam"></select>
+
+          <label>Week Of</label>
+          <input type="date" id="homeworkWeek" />
+
+          <div class="row" style="margin-top:14px">
+            <button class="green" id="markAllHomeworkBtn">Mark All Turned In + Complete</button>
+            <button class="secondary" id="clearHomeworkBtn">Clear</button>
+          </div>
+        </div>
+
+        <div class="card span-8">
+          <h2 class="card-title">Homework Sheet Results</h2>
+          <div class="card-note">Turned in and completed are tracked separately.</div>
+          <div class="homework-grid">
+            <table>
+              <thead>
+                <tr>
+                  <th>Player</th>
+                  <th>Turned In</th>
+                  <th>Completed</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody id="homeworkRows"></tbody>
+            </table>
+          </div>
+          <div class="row" style="margin-top:14px">
+            <button class="blue" id="submitHomeworkBtn">Submit Homework</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="skills" class="tab-section hidden">
+      <div class="grid">
+        <div class="card span-4">
+          <h2 class="card-title">Hive Skills Class</h2>
+          <div class="card-note">For Swarm/HIVE staff to enter weekly skills attendance.</div>
+
+          <label>Skills Date</label>
+          <input type="date" id="skillsDate" />
+
+          <label>Class Type</label>
+          <select id="skillsType">
+            <option>Shooting</option>
+            <option>Ball Handling</option>
+            <option>Finishing</option>
+            <option>Defense</option>
+            <option>Conditioning</option>
+            <option>General Skills</option>
+          </select>
+
+          <label>Filter Team</label>
+          <select id="skillsTeamFilter"></select>
+
+          <div class="row" style="margin-top:14px">
+            <button class="green" id="markAllSkillsBtn">Mark All Present</button>
+            <button class="secondary" id="clearSkillsBtn">Clear All</button>
+          </div>
+        </div>
+
+        <div class="card span-8">
+          <h2 class="card-title">Skills Attendance</h2>
+          <div class="card-note">Checked = attended skills class.</div>
+          <div id="skillsPlayers" class="player-list"></div>
+          <div class="row" style="margin-top:14px">
+            <button class="blue" id="submitSkillsBtn">Submit Skills Attendance</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="dashboard" class="tab-section hidden">
+      <div class="grid">
+        <div class="card span-12">
+          <h2 class="card-title">Swarm Dashboard</h2>
+          <div class="card-note">Local MVP dashboard. Later this can be replaced with Google Sheets / Firebase reporting.</div>
+          <div class="row">
+            <label style="margin:0">Team Filter</label>
+            <select id="dashboardTeam" style="max-width:280px"></select>
+            <button class="secondary" id="exportCsvBtn">Export CSV</button>
+          </div>
+        </div>
+
+        <div class="card span-4 metric">
+          <div class="small">Practice Attendance</div>
+          <div class="metric-value" id="practiceMetric">0%</div>
+        </div>
+        <div class="card span-4 metric">
+          <div class="small">Skills Sessions Logged</div>
+          <div class="metric-value" id="skillsMetric">0</div>
+        </div>
+        <div class="card span-4 metric">
+          <div class="small">Homework Completion</div>
+          <div class="metric-value" id="homeworkMetric">0%</div>
+        </div>
+
+        <div class="card span-12">
+          <h2 class="card-title">Player Summary</h2>
+          <div class="homework-grid">
+            <table>
+              <thead>
+                <tr>
+                  <th>Player</th>
+                  <th>Team</th>
+                  <th>Practices</th>
+                  <th>Present</th>
+                  <th>Practice %</th>
+                  <th>Skills</th>
+                  <th>Homework</th>
+                  <th>Score</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="dashboardRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="admin" class="tab-section hidden">
+      <div class="grid">
+        <div class="card span-5">
+          <h2 class="card-title">Team Setup</h2>
+          <div class="card-note">Set active teams and practice days. Saturday is intentionally excluded.</div>
+
+          <label>Team</label>
+          <select id="adminTeam"></select>
+
+          <label>Coach</label>
+          <input type="text" id="adminCoach" />
+
+          <label>Status</label>
+          <select id="adminActive">
+            <option value="true">Active</option>
+            <option value="false">Inactive / Hidden</option>
+          </select>
+
+          <label>Season Start</label>
+          <input type="date" id="adminStartDate" />
+
+          <label>Practice Days</label>
+          <div class="day-buttons" id="adminDayButtons"></div>
+
+          <div class="row" style="margin-top:14px">
+            <button class="blue" id="saveTeamBtn">Save Team Settings</button>
+          </div>
+        </div>
+
+        <div class="card span-7">
+          <h2 class="card-title">Players</h2>
+          <div class="card-note">For now, players are placeholders. Replace these with real roster names.</div>
+
+          <label>Add Player to Selected Team</label>
+          <div class="row">
+            <input type="text" id="newPlayerName" placeholder="Player name" style="flex:1; min-width:220px" />
+            <button class="green" id="addPlayerBtn">Add Player</button>
+          </div>
+
+          <div id="adminPlayers" class="player-list"></div>
+        </div>
+
+        <div class="card span-12 danger-zone">
+          <h2 class="card-title">Testing Tools</h2>
+          <div class="card-note">Use only during setup/testing.</div>
+          <div class="row">
+            <button class="secondary" id="seedBtn">Reload Sample Data</button>
+            <button class="red" id="resetBtn">Clear All Local Data</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    /************************************************************
+     * Oklahoma Swarm Practice Tracker MVP
+     * ----------------------------------------------------------
+     * Single-file GitHub Pages version.
+     * Stores data in browser localStorage for MVP testing.
+     * Later: replace save/load functions with Google Sheets API
+     * or Google Apps Script web app endpoint.
+     ************************************************************/
+
+    const STORAGE_KEY = "ok_swarm_tracker_v1";
+
+    const dayMap = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const allowedPracticeDays = [0, 1, 2, 3, 4, 5]; // No Saturday
+
+    const defaultTeams = [
+      { id: "2034-35", name: "Swarm 2034/35", coach: "Bri", active: true, startDate: "2026-05-01", practiceDays: [2,4] },
+      { id: "2034", name: "Swarm 2034", coach: "Bri", active: true, startDate: "2026-05-01", practiceDays: [2,4] },
+      { id: "2033", name: "Swarm 2033", coach: "Sam", active: true, startDate: "2026-05-01", practiceDays: [2,4] },
+      { id: "2032-elite", name: "Swarm 2032 Elite", coach: "Richie", active: true, startDate: "2026-05-01", practiceDays: [2,4] },
+      { id: "2032-gold", name: "Swarm 2032 Gold", coach: "Richie", active: true, startDate: "2026-05-01", practiceDays: [2,4] },
+      { id: "2032-black", name: "Swarm 2032 Black", coach: "Dylan", active: true, startDate: "2026-05-01", practiceDays: [2,4] },
+      { id: "2032-white", name: "Swarm 2032 White", coach: "Dylan", active: true, startDate: "2026-05-01", practiceDays: [2,4] },
+      { id: "2031-elite", name: "Swarm 2031 Elite", coach: "Jay", active: true, startDate: "2026-05-01", practiceDays: [2,4] },
+      { id: "2031-gold", name: "Swarm 2031 Gold", coach: "Jay", active: true, startDate: "2026-05-01", practiceDays: [2,4] },
+      { id: "2030-showcase", name: "Swarm 2030 Showcase", coach: "Alyson", active: true, startDate: "2026-05-01", practiceDays: [2,4] },
+      { id: "2029-showcase", name: "Swarm 2029 Showcase", coach: "Taylor", active: true, startDate: "2026-05-01", practiceDays: [2,4] },
+      { id: "2029-national", name: "Swarm 2029 National", coach: "TBD", active: true, startDate: "2026-05-01", practiceDays: [2,4] },
+      { id: "16u-elite", name: "Swarm 16U Elite", coach: "Sam", active: false, startDate: "2026-05-01", practiceDays: [2,4] },
+      { id: "17u-black", name: "Swarm 17U Black", coach: "Sam", active: false, startDate: "2026-05-01", practiceDays: [2,4] },
+      { id: "17u-showcase", name: "Swarm 17U Showcase", coach: "David", active: false, startDate: "2026-05-01", practiceDays: [2,4] },
+      { id: "17u-national", name: "Swarm 17U National", coach: "David", active: false, startDate: "2026-05-01", practiceDays: [2,4] },
+      { id: "misc", name: "Swarm Other / TBD", coach: "TBD", active: false, startDate: "2026-05-01", practiceDays: [2,4] }
+    ];
+
+    function makeSamplePlayers(teams) {
+      const players = [];
+      teams.forEach(team => {
+        for (let i = 1; i <= 10; i++) {
+          players.push({
+            id: `${team.id}-p${i}`,
+            teamId: team.id,
+            name: `Player ${i}`,
+            active: true
+          });
+        }
+      });
+      return players;
+    }
+
+    function seedData() {
+      return {
+        teams: structuredClone(defaultTeams),
+        players: makeSamplePlayers(defaultTeams),
+        attendance: [],
+        homework: [],
+        skills: [],
+        extraPractices: []
+      };
+    }
+
+    let state = loadState();
+
+    function loadState() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (!saved) {
+        const seeded = seedData();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(seeded));
+        return seeded;
+      }
+      try {
+        return JSON.parse(saved);
+      } catch {
+        const seeded = seedData();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(seeded));
+        return seeded;
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function todayISO() {
+      const d = new Date();
+      d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+      return d.toISOString().slice(0,10);
+    }
+
+    function mondayOfWeekISO(dateISO) {
+      const d = new Date(dateISO + "T12:00:00");
+      const day = d.getDay();
+      const diff = day === 0 ? -6 : 1 - day;
+      d.setDate(d.getDate() + diff);
+      d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+      return d.toISOString().slice(0,10);
+    }
+
+    function formatDate(dateISO) {
+      const d = new Date(dateISO + "T12:00:00");
+      return d.toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric", year: "numeric" });
+    }
+
+    function getTeam(teamId) {
+      return state.teams.find(t => t.id === teamId);
+    }
+
+    function getPlayersForTeam(teamId) {
+      return state.players.filter(p => p.teamId === teamId && p.active !== false);
+    }
+
+    function isScheduledPractice(team, dateISO) {
+      if (!team || team.active === false) return false;
+      if (dateISO < team.startDate) return false;
+      const d = new Date(dateISO + "T12:00:00");
+      const dow = d.getDay();
+      if (team.practiceDays.includes(dow)) return true;
+      return state.extraPractices.some(x => x.teamId === team.id && x.date === dateISO);
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+
+    function setupTabs() {
+      document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+          document.querySelectorAll(".tab-section").forEach(s => s.classList.add("hidden"));
+          btn.classList.add("active");
+          document.getElementById(btn.dataset.tab).classList.remove("hidden");
+          document.getElementById("modePill").textContent = btn.dataset.tab === "admin" ? "Admin Mode" : btn.dataset.tab === "dashboard" ? "Dashboard" : "Coach Mode";
+          renderAll();
+        });
+      });
+    }
+
+    function populateTeamSelect(selectId, includeInactive = false, includeAll = false) {
+      const el = document.getElementById(selectId);
+      const current = el.value;
+      el.innerHTML = "";
+      if (includeAll) {
+        const all = document.createElement("option");
+        all.value = "all";
+        all.textContent = "All Teams";
+        el.appendChild(all);
+      }
+      state.teams
+        .filter(t => includeInactive || t.active)
+        .forEach(t => {
+          const opt = document.createElement("option");
+          opt.value = t.id;
+          opt.textContent = `${t.name} (${t.coach})${t.active ? "" : " - inactive"}`;
+          el.appendChild(opt);
+        });
+      if ([...el.options].some(o => o.value === current)) el.value = current;
+    }
+
+    function applyTeamFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      const teamId = params.get("team");
+      if (!teamId) return;
+      ["attendanceTeam", "homeworkTeam"].forEach(id => {
+        const el = document.getElementById(id);
+        if ([...el.options].some(o => o.value === teamId)) el.value = teamId;
+      });
+    }
+
+    function renderAttendance() {
+      const teamId = document.getElementById("attendanceTeam").value;
+      const dateISO = document.getElementById("attendanceDate").value;
+      const team = getTeam(teamId);
+      const players = getPlayersForTeam(teamId);
+      const status = document.getElementById("practiceStatus");
+      const scheduled = isScheduledPractice(team, dateISO);
+
+      status.innerHTML = scheduled
+        ? `<span class="status good">Practice scheduled: ${formatDate(dateISO)}</span>`
+        : `<span class="status warn">No scheduled practice for this date</span>`;
+
+      const existing = state.attendance.find(a => a.teamId === teamId && a.date === dateISO);
+      const presentSet = new Set(existing ? existing.presentPlayerIds : players.map(p => p.id));
+      document.getElementById("attendanceNotes").value = existing?.notes || "";
+
+      const box = document.getElementById("attendancePlayers");
+      box.innerHTML = players.map(p => `
+        <div class="player-row">
+          <div>
+            <div class="player-name">${escapeHtml(p.name)}</div>
+            <div class="small">${team ? escapeHtml(team.name) : ""}</div>
+          </div>
+          <input class="check-large attendance-check" type="checkbox" value="${p.id}" ${presentSet.has(p.id) ? "checked" : ""} />
+        </div>
+      `).join("");
+    }
+
+    function renderHomework() {
+      const teamId = document.getElementById("homeworkTeam").value;
+      const week = document.getElementById("homeworkWeek").value;
+      const players = getPlayersForTeam(teamId);
+      const existing = state.homework.find(h => h.teamId === teamId && h.weekOf === week);
+      const map = new Map((existing?.results || []).map(r => [r.playerId, r]));
+
+      document.getElementById("homeworkRows").innerHTML = players.map(p => {
+        const r = map.get(p.id) || {};
+        return `
+          <tr>
+            <td><strong>${escapeHtml(p.name)}</strong></td>
+            <td><input class="check-large hw-turned" type="checkbox" data-player="${p.id}" ${r.turnedIn ? "checked" : ""}></td>
+            <td><input class="check-large hw-complete" type="checkbox" data-player="${p.id}" ${r.completed ? "checked" : ""}></td>
+            <td><input type="text" class="hw-notes" data-player="${p.id}" value="${escapeAttr(r.notes || "")}" placeholder="Optional"></td>
+          </tr>`;
+      }).join("");
+    }
+
+    function renderSkills() {
+      const filter = document.getElementById("skillsTeamFilter").value;
+      const dateISO = document.getElementById("skillsDate").value;
+      const type = document.getElementById("skillsType").value;
+      let players = state.players.filter(p => p.active !== false);
+      if (filter !== "all") players = players.filter(p => p.teamId === filter);
+      const existing = state.skills.find(s => s.date === dateISO && s.type === type && s.teamFilter === filter);
+      const presentSet = new Set(existing ? existing.presentPlayerIds : []);
+
+      document.getElementById("skillsPlayers").innerHTML = players.map(p => {
+        const team = getTeam(p.teamId);
+        return `
+          <div class="player-row">
+            <div>
+              <div class="player-name">${escapeHtml(p.name)}</div>
+              <div class="small">${team ? escapeHtml(team.name) : ""}</div>
+            </div>
+            <input class="check-large skills-check" type="checkbox" value="${p.id}" ${presentSet.has(p.id) ? "checked" : ""} />
+          </div>`;
+      }).join("");
+    }
+
+    function renderDashboard() {
+      const filter = document.getElementById("dashboardTeam").value;
+      const players = state.players.filter(p => p.active !== false && (filter === "all" || p.teamId === filter));
+      const rows = players.map(p => playerSummary(p));
+
+      const practicePct = rows.length ? Math.round(avg(rows.map(r => r.practicePct))) : 0;
+      const skillsTotal = rows.reduce((sum, r) => sum + r.skills, 0);
+      const hwPct = rows.length ? Math.round(avg(rows.map(r => r.homeworkPct))) : 0;
+
+      document.getElementById("practiceMetric").textContent = practicePct + "%";
+      document.getElementById("skillsMetric").textContent = skillsTotal;
+      document.getElementById("homeworkMetric").textContent = hwPct + "%";
+
+      document.getElementById("dashboardRows").innerHTML = rows.map(r => `
+        <tr>
+          <td><strong>${escapeHtml(r.player)}</strong></td>
+          <td>${escapeHtml(r.team)}</td>
+          <td>${r.practices}</td>
+          <td>${r.present}</td>
+          <td>${r.practicePct}%</td>
+          <td>${r.skills}</td>
+          <td>${r.homeworkCompleted}/${r.homeworkWeeks}</td>
+          <td><strong>${r.score}</strong></td>
+          <td>${statusBadge(r.score)}</td>
+        </tr>
+      `).join("");
+    }
+
+    function playerSummary(player) {
+      const team = getTeam(player.teamId);
+      const attendanceRows = state.attendance.filter(a => a.teamId === player.teamId);
+      const practices = attendanceRows.length;
+      const present = attendanceRows.filter(a => a.presentPlayerIds.includes(player.id)).length;
+      const practicePct = practices ? Math.round((present / practices) * 100) : 0;
+      const skills = state.skills.filter(s => s.presentPlayerIds.includes(player.id)).length;
+      const hwRows = state.homework.filter(h => h.teamId === player.teamId);
+      const hwResults = hwRows.map(h => (h.results || []).find(r => r.playerId === player.id)).filter(Boolean);
+      const homeworkWeeks = hwResults.length;
+      const homeworkCompleted = hwResults.filter(r => r.completed).length;
+      const homeworkPct = homeworkWeeks ? Math.round((homeworkCompleted / homeworkWeeks) * 100) : 0;
+
+      const score = (present * 10) + (skills * 10) + hwResults.reduce((sum, r) => sum + (r.turnedIn ? 5 : 0) + (r.completed ? 5 : 0), 0);
+
+      return {
+        player: player.name,
+        team: team?.name || "",
+        practices,
+        present,
+        practicePct,
+        skills,
+        homeworkWeeks,
+        homeworkCompleted,
+        homeworkPct,
+        score
+      };
+    }
+
+    function statusBadge(score) {
+      if (score >= 100) return `<span class="status good">Elite</span>`;
+      if (score >= 50) return `<span class="status warn">Building</span>`;
+      return `<span class="status bad">Low Data</span>`;
+    }
+
+    function avg(nums) {
+      if (!nums.length) return 0;
+      return nums.reduce((a,b) => a+b, 0) / nums.length;
+    }
+
+    function renderAdmin() {
+      const teamId = document.getElementById("adminTeam").value;
+      const team = getTeam(teamId);
+      if (!team) return;
+
+      document.getElementById("adminCoach").value = team.coach || "";
+      document.getElementById("adminActive").value = String(team.active !== false);
+      document.getElementById("adminStartDate").value = team.startDate || "2026-05-01";
+
+      const dayBox = document.getElementById("adminDayButtons");
+      dayBox.innerHTML = allowedPracticeDays.map(d => `
+        <button type="button" class="day-toggle ${team.practiceDays.includes(d) ? "active" : ""}" data-day="${d}">${dayMap[d]}</button>
+      `).join("");
+
+      dayBox.querySelectorAll(".day-toggle").forEach(btn => {
+        btn.addEventListener("click", () => btn.classList.toggle("active"));
+      });
+
+      const players = getPlayersForTeam(teamId);
+      document.getElementById("adminPlayers").innerHTML = players.map(p => `
+        <div class="player-row">
+          <div class="player-name">${escapeHtml(p.name)}</div>
+          <button class="red remove-player-btn" data-player="${p.id}">Remove</button>
+        </div>
+      `).join("");
+
+      document.querySelectorAll(".remove-player-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const p = state.players.find(x => x.id === btn.dataset.player);
+          if (p) p.active = false;
+          saveState();
+          renderAll();
+          showToast("Player removed from active roster");
+        });
+      });
+    }
+
+    function renderAll() {
+      populateTeamSelect("attendanceTeam");
+      populateTeamSelect("homeworkTeam");
+      populateTeamSelect("skillsTeamFilter", true, true);
+      populateTeamSelect("dashboardTeam", true, true);
+      populateTeamSelect("adminTeam", true);
+      renderAttendance();
+      renderHomework();
+      renderSkills();
+      renderDashboard();
+      renderAdmin();
+    }
+
+    function bindActions() {
+      ["attendanceTeam", "attendanceDate"].forEach(id => document.getElementById(id).addEventListener("change", renderAttendance));
+      ["homeworkTeam", "homeworkWeek"].forEach(id => document.getElementById(id).addEventListener("change", renderHomework));
+      ["skillsTeamFilter", "skillsDate", "skillsType"].forEach(id => document.getElementById(id).addEventListener("change", renderSkills));
+      document.getElementById("dashboardTeam").addEventListener("change", renderDashboard);
+      document.getElementById("adminTeam").addEventListener("change", renderAdmin);
+
+      document.getElementById("markAllPresentBtn").addEventListener("click", () => {
+        document.querySelectorAll(".attendance-check").forEach(c => c.checked = true);
+      });
+      document.getElementById("clearAllBtn").addEventListener("click", () => {
+        document.querySelectorAll(".attendance-check").forEach(c => c.checked = false);
+      });
+      document.getElementById("addExtraPracticeBtn").addEventListener("click", () => {
+        const teamId = document.getElementById("attendanceTeam").value;
+        const date = document.getElementById("attendanceDate").value;
+        if (!state.extraPractices.some(x => x.teamId === teamId && x.date === date)) {
+          state.extraPractices.push({ teamId, date });
+          saveState();
+        }
+        renderAttendance();
+        showToast("Extra practice added for this date");
+      });
+
+      document.getElementById("submitAttendanceBtn").addEventListener("click", () => {
+        const teamId = document.getElementById("attendanceTeam").value;
+        const date = document.getElementById("attendanceDate").value;
+        const presentPlayerIds = [...document.querySelectorAll(".attendance-check:checked")].map(c => c.value);
+        const notes = document.getElementById("attendanceNotes").value.trim();
+        const record = { teamId, date, presentPlayerIds, notes, submittedAt: new Date().toISOString() };
+        state.attendance = state.attendance.filter(a => !(a.teamId === teamId && a.date === date));
+        state.attendance.push(record);
+        saveState();
+        renderAll();
+        showToast("Attendance submitted");
+      });
+
+      document.getElementById("markAllHomeworkBtn").addEventListener("click", () => {
+        document.querySelectorAll(".hw-turned,.hw-complete").forEach(c => c.checked = true);
+      });
+      document.getElementById("clearHomeworkBtn").addEventListener("click", () => {
+        document.querySelectorAll(".hw-turned,.hw-complete").forEach(c => c.checked = false);
+        document.querySelectorAll(".hw-notes").forEach(i => i.value = "");
+      });
+      document.getElementById("submitHomeworkBtn").addEventListener("click", () => {
+        const teamId = document.getElementById("homeworkTeam").value;
+        const weekOf = document.getElementById("homeworkWeek").value;
+        const players = getPlayersForTeam(teamId);
+        const results = players.map(p => ({
+          playerId: p.id,
+          turnedIn: document.querySelector(`.hw-turned[data-player="${p.id}"]`)?.checked || false,
+          completed: document.querySelector(`.hw-complete[data-player="${p.id}"]`)?.checked || false,
+          notes: document.querySelector(`.hw-notes[data-player="${p.id}"]`)?.value.trim() || ""
+        }));
+        state.homework = state.homework.filter(h => !(h.teamId === teamId && h.weekOf === weekOf));
+        state.homework.push({ teamId, weekOf, results, submittedAt: new Date().toISOString() });
+        saveState();
+        renderAll();
+        showToast("Homework submitted");
+      });
+
+      document.getElementById("markAllSkillsBtn").addEventListener("click", () => {
+        document.querySelectorAll(".skills-check").forEach(c => c.checked = true);
+      });
+      document.getElementById("clearSkillsBtn").addEventListener("click", () => {
+        document.querySelectorAll(".skills-check").forEach(c => c.checked = false);
+      });
+      document.getElementById("submitSkillsBtn").addEventListener("click", () => {
+        const date = document.getElementById("skillsDate").value;
+        const type = document.getElementById("skillsType").value;
+        const teamFilter = document.getElementById("skillsTeamFilter").value;
+        const presentPlayerIds = [...document.querySelectorAll(".skills-check:checked")].map(c => c.value);
+        state.skills = state.skills.filter(s => !(s.date === date && s.type === type && s.teamFilter === teamFilter));
+        state.skills.push({ date, type, teamFilter, presentPlayerIds, submittedAt: new Date().toISOString() });
+        saveState();
+        renderAll();
+        showToast("Skills attendance submitted");
+      });
+
+      document.getElementById("saveTeamBtn").addEventListener("click", () => {
+        const team = getTeam(document.getElementById("adminTeam").value);
+        if (!team) return;
+        team.coach = document.getElementById("adminCoach").value.trim();
+        team.active = document.getElementById("adminActive").value === "true";
+        team.startDate = document.getElementById("adminStartDate").value;
+        team.practiceDays = [...document.querySelectorAll("#adminDayButtons .day-toggle.active")].map(b => Number(b.dataset.day));
+        saveState();
+        renderAll();
+        showToast("Team settings saved");
+      });
+
+      document.getElementById("addPlayerBtn").addEventListener("click", () => {
+        const teamId = document.getElementById("adminTeam").value;
+        const name = document.getElementById("newPlayerName").value.trim();
+        if (!name) return showToast("Enter a player name first");
+        state.players.push({ id: `${teamId}-${Date.now()}`, teamId, name, active: true });
+        document.getElementById("newPlayerName").value = "";
+        saveState();
+        renderAll();
+        showToast("Player added");
+      });
+
+      document.getElementById("seedBtn").addEventListener("click", () => {
+        if (!confirm("Reload sample data? This will replace local test data.")) return;
+        state = seedData();
+        saveState();
+        initializeDefaults();
+        renderAll();
+        showToast("Sample data reloaded");
+      });
+
+      document.getElementById("resetBtn").addEventListener("click", () => {
+        if (!confirm("Clear all local data?")) return;
+        localStorage.removeItem(STORAGE_KEY);
+        state = seedData();
+        saveState();
+        initializeDefaults();
+        renderAll();
+        showToast("Local data cleared");
+      });
+
+      document.getElementById("exportCsvBtn").addEventListener("click", exportCsv);
+    }
+
+    function exportCsv() {
+      const rows = [["Type", "Date/Week", "Team", "Player", "Present/Turned In", "Completed", "Notes"]];
+
+      state.attendance.forEach(a => {
+        const team = getTeam(a.teamId);
+        getPlayersForTeam(a.teamId).forEach(p => {
+          rows.push(["Practice", a.date, team?.name || "", p.name, a.presentPlayerIds.includes(p.id) ? "Yes" : "No", "", a.notes || ""]);
+        });
+      });
+
+      state.skills.forEach(s => {
+        s.presentPlayerIds.forEach(pid => {
+          const p = state.players.find(x => x.id === pid);
+          const team = p ? getTeam(p.teamId) : null;
+          rows.push(["Skills - " + s.type, s.date, team?.name || "", p?.name || "", "Yes", "", ""]);
+        });
+      });
+
+      state.homework.forEach(h => {
+        const team = getTeam(h.teamId);
+        (h.results || []).forEach(r => {
+          const p = state.players.find(x => x.id === r.playerId);
+          rows.push(["Homework", h.weekOf, team?.name || "", p?.name || "", r.turnedIn ? "Yes" : "No", r.completed ? "Yes" : "No", r.notes || ""]);
+        });
+      });
+
+      const csv = rows.map(row => row.map(cell => `"${String(cell).replaceAll('"','""')}"`).join(",")).join("\n");
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "swarm-tracker-export.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>'"]/g, ch => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#039;", '"': "&quot;"
+      }[ch]));
+    }
+
+    function escapeAttr(str) {
+      return escapeHtml(str).replace(/`/g, "&#096;");
+    }
+
+    function initializeDefaults() {
+      const today = todayISO();
+      document.getElementById("attendanceDate").value = today;
+      document.getElementById("skillsDate").value = today;
+      document.getElementById("homeworkWeek").value = mondayOfWeekISO(today);
+      document.getElementById("adminStartDate").value = "2026-05-01";
+    }
+
+    setupTabs();
+    initializeDefaults();
+    populateTeamSelect("attendanceTeam");
+    populateTeamSelect("homeworkTeam");
+    populateTeamSelect("skillsTeamFilter", true, true);
+    populateTeamSelect("dashboardTeam", true, true);
+    populateTeamSelect("adminTeam", true);
+    applyTeamFromUrl();
+    bindActions();
+    renderAll();
+  </script>
+</body>
+</html>
